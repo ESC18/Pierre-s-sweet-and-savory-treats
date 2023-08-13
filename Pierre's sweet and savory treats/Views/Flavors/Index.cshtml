@@ -1,4 +1,27 @@
-﻿@page
-@model Pierre_s_sweet_and_savory_treats.Views.Flavors.IndexModel
-@{
-}
+﻿@model List<Flavor>
+
+<h2>Flavors</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var flavor in Model)
+        {
+            <tr>
+                <td>@flavor.Id</td>
+                <td>@flavor.Name</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@flavor.Id">Details</a> |
+                    <a asp-action="Edit" asp-route-id="@flavor.Id">Edit</a> |
+                    <a asp-action="Delete" asp-route-id="@flavor.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<a asp-action="Create">Create New</a>

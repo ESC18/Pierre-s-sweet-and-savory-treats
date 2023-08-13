@@ -1,4 +1,11 @@
-﻿@page
-@model Pierre_s_sweet_and_savory_treats.Views.Flavors.EditModel
-@{
-}
+﻿@model Flavor
+
+<h2>Edit Flavor</h2>
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>

@@ -1,12 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PierreTreats.Data;
-using PierreTreats.Models;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Pierre_s_sweet_and_savory_treats.Data;
 using Pierre_s_sweet_and_savory_treats.Models;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,16 +10,16 @@ namespace Pierre_s_sweet_and_savory_treats.Controllers
 {
     public class FlavorsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _db;
 
-        public FlavorsController(ApplicationDbContext context)
+        public FlavorsController(ApplicationDbContext db)
         {
-            _context = context;
+            _db = db;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var flavors = await _context.Flavors.ToListAsync();
+            List<Flavor> flavors = _db.Flavors.ToList();
             return View(flavors);
         }
 
@@ -33,94 +29,74 @@ namespace Pierre_s_sweet_and_savory_treats.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Flavor flavor)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(flavor);
-                await _context.SaveChangesAsync();
+                _db.Flavors.Add(flavor);
+                await _db.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(flavor);
         }
 
-        public async Task<IActionResult> Details(int? id)
+        public IActionResult Details(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var flavor = await _context.Flavors.FirstOrDefaultAsync(m => m.Id == id);
-
+            Flavor flavor = _db.Flavors.FirstOrDefault(f => f.FlavorId == id);
             if (flavor == null)
             {
                 return NotFound();
             }
-
             return View(flavor);
         }
 
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var flavor = await _context.Flavors.FindAsync(id);
-
+            Flavor flavor = _db.Flavors.FirstOrDefault(f => f.FlavorId == id);
             if (flavor == null)
             {
                 return NotFound();
             }
-
             return View(flavor);
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Flavor flavor)
         {
-            if (id != flavor.Id)
+            if (id != flavor.FlavorId)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                _context.Update(flavor);
-                await _context.SaveChangesAsync();
+                _db.Entry(flavor).State = EntityState.Modified;
+                await _db.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(flavor);
         }
 
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var flavor = await _context.Flavors.FirstOrDefaultAsync(m => m.Id == id);
-
+            Flavor flavor = _db.Flavors.FirstOrDefault(f => f.FlavorId == id);
             if (flavor == null)
             {
                 return NotFound();
             }
-
             return View(flavor);
         }
 
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var flavor = await _context.Flavors.FindAsync(id);
-            _context.Flavors.Remove(flavor);
-            await _context.SaveChangesAsync();
+            Flavor flavor = _db.Flavors.FirstOrDefault(f => f.FlavorId == id);
+            if (flavor == null)
+            {
+                return NotFound();
+            }
+            _db.Flavors.Remove(flavor);
+            await _db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
     }

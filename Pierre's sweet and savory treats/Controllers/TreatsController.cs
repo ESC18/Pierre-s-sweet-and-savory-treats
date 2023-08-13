@@ -2,25 +2,25 @@
 using Microsoft.EntityFrameworkCore;
 using Pierre_s_sweet_and_savory_treats.Data;
 using Pierre_s_sweet_and_savory_treats.Models;
-using PierreTreats.Data;
-using PierreTreats.Models;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 
 namespace Pierre_s_sweet_and_savory_treats.Controllers
 {
     public class TreatsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _db;
 
-        public TreatsController(ApplicationDbContext context)
+        public TreatsController(ApplicationDbContext db)
         {
-            _context = context;
+            _db = db;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var treats = await _context.Treats.ToListAsync();
+            List<Treat> treats = _db.Treats.ToList();
             return View(treats);
         }
 
@@ -30,94 +30,74 @@ namespace Pierre_s_sweet_and_savory_treats.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Treat treat)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(treat);
-                await _context.SaveChangesAsync();
+                _db.Treats.Add(treat);
+                await _db.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(treat);
         }
 
-        public async Task<IActionResult> Details(int? id)
+        public IActionResult Details(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var treat = await _context.Treats.FirstOrDefaultAsync(m => m.Id == id);
-
+            Treat treat = _db.Treats.FirstOrDefault(t => t.TreatId == id);
             if (treat == null)
             {
                 return NotFound();
             }
-
             return View(treat);
         }
 
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var treat = await _context.Treats.FindAsync(id);
-
+            Treat treat = _db.Treats.FirstOrDefault(t => t.TreatId == id);
             if (treat == null)
             {
                 return NotFound();
             }
-
             return View(treat);
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Treat treat)
         {
-            if (id != treat.Id)
+            if (id != treat.TreatId)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                _context.Update(treat);
-                await _context.SaveChangesAsync();
+                _db.Entry(treat).State = EntityState.Modified;
+                await _db.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(treat);
         }
 
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var treat = await _context.Treats.FirstOrDefaultAsync(m => m.Id == id);
-
+            Treat treat = _db.Treats.FirstOrDefault(t => t.TreatId == id);
             if (treat == null)
             {
                 return NotFound();
             }
-
             return View(treat);
         }
 
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var treat = await _context.Treats.FindAsync(id);
-            _context.Treats.Remove(treat);
-            await _context.SaveChangesAsync();
+            Treat treat = _db.Treats.FirstOrDefault(t => t.TreatId == id);
+            if (treat == null)
+            {
+                return NotFound();
+            }
+            _db.Treats.Remove(treat);
+            await _db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
     }
