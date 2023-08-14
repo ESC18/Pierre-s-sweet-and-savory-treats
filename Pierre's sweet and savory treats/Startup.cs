@@ -1,10 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Pierre_s_sweet_and_savory_treats.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Pierre_s_sweet_and_savory_treats.Models;
 
 namespace Pierre_s_sweet_and_savory_treats
 {
@@ -25,7 +20,6 @@ namespace Pierre_s_sweet_and_savory_treats
             services.AddControllersWithViews();
             services.AddRazorPages();
 
-            // Additional services and configurations
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -33,7 +27,9 @@ namespace Pierre_s_sweet_and_savory_treats
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
+                app.UseExceptionHandler("/Home/Error");
+                app.UseHsts();
+
             }
             else
             {
